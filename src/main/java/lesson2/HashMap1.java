@@ -5,21 +5,16 @@ class Globals{
 }
 
 public class HashMap1 {
+    private int size = 16;
     class Node {
         Object key;
         Object value;
         int hash;
-
-        @Override
-        public int hashCode() {
-            int h1 = key.hashCode();
-            return h1 & size;
-        }
-
         Node(Object key, Object value){
             this.key = key;
             this.value = value;
             Globals.counter++;
+            hash = key.hashCode() & (size - 1);
         }
 
         public void remove(Object key) {
@@ -28,8 +23,7 @@ public class HashMap1 {
         }
     }
 
-    private int size = 16;
-    public Object[][] myMap = new Object[size][10];
+    public Node[][] myMap = new Node[size][100];
 
     public HashMap1(Object key, Object value) {
         Node newNode = new Node(key, value);
@@ -38,24 +32,30 @@ public class HashMap1 {
 
     public void put(Object key, Object value){
         Node newNode = new Node(key, value);
-        myMap[newNode.hashCode()-1][0] = newNode;
+        if (    (myMap[newNode.hash][0] == null) ||
+                (myMap[newNode.hash][0].key.equals(newNode.key))
+            )
+            myMap[newNode.hash][0] = newNode;
     }
 
     public void put(Node newNode){
-        myMap[newNode.hashCode()-1][0] = newNode;
+        if (    (myMap[newNode.hash][0] == null) ||
+                (myMap[newNode.hash][0].key.equals(newNode.key))
+            )
+            myMap[newNode.hash][0] = newNode;
     }
 
    /*public Object get(Object key){
         int getHash = key.hashCode() & size;
-        if (myMap[getHash-1][1] == null) {
-            return myMap[getHash-1][0];
+        if (myMap[getHash][1] == null) {
+            return myMap[getHash][0];
         } else {
             return key;
         }
     }*/
 
     public boolean containsKey(Object key){
-        if (myMap[key.hashCode() & -1][0] == null){
+        if (myMap[key.hashCode() & (size-1)][0] == null){
             return false;
         } else {
             return true;
@@ -68,6 +68,11 @@ public class HashMap1 {
 
     public static void main(String[] args) {
         HashMap1 myMap = new HashMap1("10", "10");
+        myMap.put("11", "10");
+        myMap.put("12", "10");
+        myMap.put(1, "10");
+        myMap.put(2, "10");
         System.out.println(myMap.containsKey("10"));
+        System.out.println(myMap.size());
     }
 }
