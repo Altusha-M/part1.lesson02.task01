@@ -1,9 +1,5 @@
 package lesson2;
 
-class Globals {
-    public static int counter = 0;
-}
-
 class Node {
     public Object getKey() {
         return key;
@@ -33,24 +29,20 @@ class Node {
         }
         hash = key.hashCode();
     }
-
-    public void remove(Object key) {
-        this.key = null;
-        Globals.counter--;
-    }
 }
 
 public class HashMap1 {
     private int size = 100;
     private int bucketSize = 10;
     private int bucketIndex;
+    private int counter = 0;
 
     public int getSize() {
         return size;
     }
 
     public int size() { // tested
-        return Globals.counter;
+        return counter;
     }
 
     public Node[][] getMyMap() {
@@ -66,6 +58,7 @@ public class HashMap1 {
     public HashMap1(Object key, Object value) {
         Node newNode = new Node(key, value);
         this.put(newNode);
+        counter++;
     }
 
     public void put(Object key, Object value) {
@@ -75,31 +68,42 @@ public class HashMap1 {
         } catch (NullPointerException e) {
             throw e;
         }
-        boolean emptyBucketCondition = myMap[bucketIndex][0].getKey() == null;
+        boolean emptyBucketCondition = myMap[bucketIndex][0] == null;
         if (emptyBucketCondition) {
             myMap[bucketIndex][0] = newNode;
+            counter++;
         } else {
             int i = 0;
-            while (myMap[bucketIndex][i] != null) {
-                if (myMap[bucketIndex][i].getKey().equals(key)) {
+            do {
+                if (!myMap[bucketIndex][i].getKey().equals(key)) {
                     myMap[bucketIndex][i] = newNode;
+                    counter++;
                 }
                 i++;
-            }
+            } while (myMap[bucketIndex][i+1] != null);
         }
     }
 
 
     public void put(Node newNode) {
-        bucketIndex = newNode.getKey().hashCode() & (size - 1);
-        if ((myMap[bucketIndex][0] == null) ||
-                !(myMap[bucketIndex][0].getKey().equals(newNode.getKey())) ||
-                !(myMap[bucketIndex][0].getKey().hashCode() == newNode.getKey().hashCode())
-        ) {
+        try {
+            bucketIndex = newNode.getHash() & (size - 1);
+        } catch (NullPointerException e) {
+            throw e;
+        }
+        boolean emptyBucketCondition = myMap[bucketIndex][0] == null;
+        if (emptyBucketCondition) {
             myMap[bucketIndex][0] = newNode;
-            Globals.counter++;
+            counter++;
         } else {
-            myMap[bucketIndex][0] = newNode;
+            int i = 0;
+            do {
+                if (!myMap[bucketIndex][i].getKey().equals(newNode.getKey())) {
+                    myMap[bucketIndex][i] = newNode;
+                    counter++;
+                }
+                i++;
+            } while (myMap[bucketIndex][i+1] != null);
         }
     }
 
@@ -110,28 +114,51 @@ public class HashMap1 {
         } catch (NullPointerException e) {
             throw e;
         }
-        boolean emptyBucketCondition = myMap[bucketIndex][0].getKey() == null;
+        boolean emptyBucketCondition = myMap[bucketIndex][0] == null;
         if (emptyBucketCondition) {
             return null;
         } else {
             int i = 0;
-            while (myMap[bucketIndex][i] != null) {
+            do {
                 if (myMap[bucketIndex][i].getKey().equals(key)) {
-                    return myMap[bucketIndex][i].getValue();
+                    return myMap[bucketIndex][i].getKey();
                 }
                 i++;
-            }
+            } while (myMap[bucketIndex][i+1] != null);
             return null;
         }
     }
 
     public void remove(Object key) {
-        int hash = key.hashCode();
-        int bucketIndex = hash & (size - 1);
+        try {
+            bucketIndex = key.hashCode() & (size - 1);
+        } catch (NullPointerException e) {
+            throw e;
+        }
+        boolean emptyBucketCondition = myMap[bucketIndex][0] == null;
+        if (emptyBucketCondition) {
+            throw new RuntimeException();
+        } else {
+            int i = 0;
+            do {
+                if (myMap[bucketIndex][i].getKey().equals(key)) {
+                    myMap[bucketIndex][i] = null;
+                    counter--;
+                    return;
+                }
+                i++;
+            } while (myMap[bucketIndex][i+1] != null);
+            throw new RuntimeException();
+        }
     }
 
     public void clear() {
-        myMap = new Node[size][bucketSize];
+        for (bucketIndex = 0; bucketIndex < size; bucketIndex++) {
+            for(int i = 0; i < bucketSize; i++) {
+                myMap[bucketIndex][i] = null;
+                counter = 0;
+            }
+        }
     }
 
     public boolean containsKey(Object key) {
@@ -140,17 +167,17 @@ public class HashMap1 {
         } catch (NullPointerException e) {
             throw e;
         }
-        boolean emptyBucketCondition = myMap[bucketIndex][0].getKey() == null;
+        boolean emptyBucketCondition = myMap[bucketIndex][0] == null;
         if (emptyBucketCondition) {
             return false;
         } else {
             int i = 0;
-            while (myMap[bucketIndex][i] != null) {
+            do {
                 if (myMap[bucketIndex][i].getKey().equals(key)) {
                     return true;
                 }
                 i++;
-            }
+            } while (myMap[bucketIndex][i+1] != null);
             return false;
         }
     }
@@ -164,6 +191,10 @@ public class HashMap1 {
         myMap.put(2, "10");
         System.out.println(myMap.containsKey("1"));
         System.out.println(myMap.size());
+        System.out.println(myMap.get("12"));
+        myMap.remove(1);
+        System.out.println(myMap.get(1));
+        myMap.clear();
         System.out.println(myMap.get("12"));
     }
 }
