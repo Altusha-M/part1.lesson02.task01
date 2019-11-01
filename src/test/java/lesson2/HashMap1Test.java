@@ -1,5 +1,6 @@
 package lesson2;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -23,6 +24,12 @@ public class HashMap1Test {
         myMap.put(a, 1);
         int hashInMap = myMap.getMyMap()[a.hashCode() & (myMap.getSize() - 1)][0].getKey().hashCode();
         assertEquals(hashInMap, a.hashCode());
+        try {
+            myMap.put(null);
+            Assert.fail("Expected NullPointerException");
+        }catch (NullPointerException e) {
+            Assert.assertNotEquals("", e.getMessage());
+        }
     }
 
     @Test
@@ -30,6 +37,12 @@ public class HashMap1Test {
         myMap.clear();
         myMap.put("1", "1");
         assertTrue(myMap.containsKey("1"));
+        try {
+            myMap.containsKey(null);
+            Assert.fail("Expected NullPointerException");
+        }catch (NullPointerException e) {
+            Assert.assertNotEquals("", e.getMessage());
+        }
     }
 
     @Test
@@ -41,33 +54,38 @@ public class HashMap1Test {
         Object o = "q";
         myMap.put(o, 2);
         assertTrue(myMap.get(o).equals(o));
+        try {
+            myMap.get(null);
+            Assert.fail("Expected NullPointerException");
+        }catch (NullPointerException e) {
+            Assert.assertNotEquals("", e.getMessage());
+        }
     }
 
     @Test
     public void remove() {
-        myMap.put("2","3");
-        assertTrue(myMap.containsKey("2"));
-        myMap.remove("2");
-        assertTrue(!myMap.containsKey("2"));
+        myMap.put("1","3");
+        myMap.put(1,"3");
+        assertTrue(myMap.containsKey("1"));
+        myMap.remove("1");
+        assertTrue(!myMap.containsKey("1"));
+        try {
+            myMap.remove(null);
+            Assert.fail("Expected NullPointerException");
+        }catch (NullPointerException e) {
+            Assert.assertNotEquals("", e.getMessage());
+        }
     }
 
     @Test
     public void clear() {
         myMap.put("2","3");
-        assertTrue(myMap.containsKey("2"));
         myMap.put("4","3");
-        assertTrue(myMap.containsKey("4"));
         myMap.put("5","3");
-        assertTrue(myMap.containsKey("5"));
         myMap.put("6","3");
-        assertTrue(myMap.containsKey("6"));
         myMap.put("27","3");
-        assertTrue(myMap.containsKey("27"));
         myMap.clear();
         assertEquals(0, myMap.size());
     }
 
-    @Test
-    public void testContainsKey() {
-    }
 }

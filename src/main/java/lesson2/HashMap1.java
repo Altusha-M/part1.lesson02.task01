@@ -123,7 +123,11 @@ public class HashMap1 {
                 if (myMap[bucketIndex][i].getKey().equals(key)) {
                     return myMap[bucketIndex][i].getKey();
                 }
-                i++;
+                if (i < bucketSize-1) {
+                    i++;
+                } else {
+                    return null;
+                }
             } while (myMap[bucketIndex][i+1] != null);
             return null;
         }
@@ -142,12 +146,13 @@ public class HashMap1 {
             int i = 0;
             do {
                 if (myMap[bucketIndex][i].getKey().equals(key)) {
-                    myMap[bucketIndex][i] = null;
+                    myMap[bucketIndex][i] = myMap[bucketIndex][i + 1];
+                    myMap[bucketIndex][i + 1] = null;
                     counter--;
                     return;
                 }
                 i++;
-            } while (myMap[bucketIndex][i+1] != null);
+            } while (i < bucketSize);
             throw new RuntimeException();
         }
     }
