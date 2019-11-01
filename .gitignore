@@ -1,2 +1,6 @@
 # Project exclude paths
 /target/
+/src/test/java/mypackage/
+.gitignore
+.idea
+*.iml
